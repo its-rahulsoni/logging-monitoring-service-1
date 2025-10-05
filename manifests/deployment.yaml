@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logging-monitoring-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: logging-monitoring
+  template:
+    metadata:
+      labels:
+        app: logging-monitoring
+    spec:
+      containers:
+        - name: logging-monitoring
+          image: itsrahulsoni/logging-monitoring:1.0
+          ports:
+            - containerPort: 8080
