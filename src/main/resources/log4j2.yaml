@@ -15,14 +15,14 @@ Configuration:
       name: Console
       target: SYSTEM_OUT
       PatternLayout:
-        pattern: "dateTime=%d{yyyy-MM-dd HH:mm:ss}, thread=[%t], level=%level, requestId=%X{requestId}, serviceName=${serviceName}, class=%logger{36}, message=%msg%n"
+        pattern: "dateTime=%d{dd-MM-yyyy HH:mm:ss}, thread=[%t], level=%level, requestId=%X{requestId}, serviceName=${serviceName}, class=%logger{36}, message=%msg%n"
 
     RollingFile:
       name: FileAppender
       fileName: ${logFile}
-      filePattern: "${logDir}/app-%d{yyyy-MM-dd}-%i.log.gz"
+      filePattern: "${logDir}/app-%d{dd-MM-yyyy}-%i.log.gz"
       PatternLayout:
-        pattern: "dateTime=%d{yyyy-MM-dd HH:mm:ss}, thread=[%t], level=%level, requestId=%X{requestId}, serviceName=${serviceName}, class=%logger{36}, message=%msg%n"
+        pattern: "dateTime=%d{dd-MM-yyyy HH:mm:ss}, thread=[%t], level=%level, requestId=%X{requestId}, serviceName=${serviceName}, class=%logger{36}, message=%msg%n"
       Policies:
         TimeBasedTriggeringPolicy:
           interval: 1
