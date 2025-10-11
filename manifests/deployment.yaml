@@ -1,19 +1,65 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: logging-monitoring-deployment
+  name: logging-monitoring-service-1-deployment
+  labels:
+    app: logging-monitoring-service-1
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: logging-monitoring
+      app: logging-monitoring-service-1
   template:
     metadata:
       labels:
-        app: logging-monitoring
+        app: logging-monitoring-service-1
     spec:
+      serviceAccountName: fluentbit-sa
       containers:
         - name: logging-monitoring
-          image: itsrahulsoni/logging-monitoring:1.0
+          image: itsrahulsoni/logging-monitoring:1.5
+          imagePullPolicy: Always
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=Asia/Kolkata" # Set timezone to IST (Indian Standard Time) in the logs ....
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: log-volume
+              mountPath: /app/logs
+
+        - name: log-sidecar
+          image: fluent/fluent-bit:2.2.0
+          args:
+            - -c
+            - /fluent-bit/etc/fluent-bit.conf
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: secret-key
+
+          volumeMounts:
+            - name: log-volume
+              mountPath: /app/logs
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc
+            - name: fluent-bit-lua # This script is required to convert Fluent Bit DateTime into IST ....
+              mountPath: /fluent-bit/etc/lua
+      volumes:
+        - name: fluent-bit-config # This script is required to convert Fluent Bit DateTime into IST ....
+          configMap:
+            name: fluent-bit-config
+        - name: fluent-bit-lua # This script is required to convert Fluent Bit DateTime into IST ....
+          configMap:
+            name: fluent-bit-lua
+        - name: log-volume
+          emptyDir: { }

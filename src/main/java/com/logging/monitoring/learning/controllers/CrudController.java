@@ -22,13 +22,13 @@ public class CrudController {
         logger.error("ERROR, CRUD! endpoint was called");
         logger.warn("WARN, CRUD! endpoint was called");
         logger.info("Hello, CRUD! endpoint was called");
-        return "Hello, CRUD!";
+        return "Hello, CRUD #01!";
     }
 
     @GetMapping("/test")
     public String test() {
         logger.info("Test, CRUD! endpoint was called");
-        return "Test, CRUD!";
+        return "Test, CRUD #01!";
     }
 /**
  *

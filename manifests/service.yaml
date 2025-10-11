@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: logging-monitoring
+  name: logging-monitoring-service-1-service
 spec:
   selector:
-    app: logging-monitoring
+    app: logging-monitoring-service-1
   ports:
     - protocol: TCP
       port: 80

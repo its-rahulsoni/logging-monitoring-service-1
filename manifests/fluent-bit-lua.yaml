@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-lua
+  namespace: default
+data:
+  convert_timestamp.lua: |
+    function convert(tag, timestamp, record)
+        local log_line = record["log"]
+        -- extract IST dateTime from log line
+        local ist_time = log_line:match("dateTime=(%d+%-%d+%-%d+ %d+:%d+:%d+)")
+        if ist_time then
+            local pattern = "(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)"
+            local d, m, y, h, min, s = ist_time:match(pattern)
+            if d then
+                -- Convert IST -> UTC timestamp for Fluent Bit internal use
+                timestamp = os.time({
+                    year  = tonumber(y),
+                    month = tonumber(m),
+                    day   = tonumber(d),
+                    hour  = tonumber(h),
+                    min   = tonumber(min),
+                    sec   = tonumber(s)
+                }) - (5*3600 + 30*60)
+
+                -- Keep IST in the JSON field
+                record["date"] = ist_time
+            end
+        end
+        return 1, timestamp, record
+    end

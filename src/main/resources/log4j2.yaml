@@ -6,7 +6,7 @@ Configuration:
       - name: serviceName
         value: logging-monitoring-service-1
       - name: logDir
-        value: /Users/rahulsoni/logs/logging-monitoring-service-1
+        value: /app/logs/logging-monitoring-service-1
       - name: logFile
         value: ${logDir}/app.log
 
@@ -38,8 +38,9 @@ Configuration:
           - ref: Console
           - ref: FileAppender
 
-  Root:
-    level: debug
-    AppenderRef:
-      - ref: Console
-      - ref: FileAppender
+    Root:
+      level: debug
+      additivity: false
+      AppenderRef:
+        - ref: Console
+        - ref: FileAppender
