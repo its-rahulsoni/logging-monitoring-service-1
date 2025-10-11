@@ -7,13 +7,14 @@ data:
   convert_timestamp.lua: |
     function convert(tag, timestamp, record)
         local log_line = record["log"]
-        -- extract IST dateTime from log line
+        -- Try to extract IST dateTime from log line (e.g. dateTime=11-10-2025 20:40:21)
         local ist_time = log_line:match("dateTime=(%d+%-%d+%-%d+ %d+:%d+:%d+)")
+
         if ist_time then
-            local pattern = "(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)"
-            local d, m, y, h, min, s = ist_time:match(pattern)
+            -- Parse IST timestamp from log
+            local d, m, y, h, min, s = ist_time:match("(%d+)%-(%d+)%-(%d+) (%d+):(%d+):(%d+)")
             if d then
-                -- Convert IST -> UTC timestamp for Fluent Bit internal use
+                -- Convert IST → UTC for Fluent Bit internal timestamp
                 timestamp = os.time({
                     year  = tonumber(y),
                     month = tonumber(m),
@@ -21,11 +22,20 @@ data:
                     hour  = tonumber(h),
                     min   = tonumber(min),
                     sec   = tonumber(s)
-                }) - (5*3600 + 30*60)
+                }) - (5 * 3600 + 30 * 60)
 
-                -- Keep IST in the JSON field
+                -- Keep human-readable IST date for reference
                 record["date"] = ist_time
             end
+        else
+            -- Logs without dateTime= (e.g. container or system logs)
+            -- Convert Fluent Bit’s UTC timestamp → IST for consistency
+            local ist_timestamp = timestamp + (5 * 3600 + 30 * 60)
+            local t = os.date("*t", ist_timestamp)
+            local ist_str = string.format("%02d-%02d-%04d %02d:%02d:%02d",
+                                          t.day, t.month, t.year, t.hour, t.min, t.sec)
+            record["date"] = ist_str
         end
+
         return 1, timestamp, record
     end
