@@ -32,14 +32,14 @@ Configuration:
   Loggers:
     Logger:
       - name: com.logging.monitoring.learning
-        level: debug
+        level: info
         additivity: false
         AppenderRef:
           - ref: Console
           - ref: FileAppender
 
     Root:
-      level: debug
+      level: info
       additivity: false
       AppenderRef:
         - ref: Console
