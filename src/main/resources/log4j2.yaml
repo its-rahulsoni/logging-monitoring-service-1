@@ -6,7 +6,8 @@ Configuration:
       - name: serviceName
         value: logging-monitoring-service-1
       - name: logDir
-        value: /app/logs/logging-monitoring-service-1
+        #value: /app/logs/logging-monitoring-service-1
+        value: C:/app-logs/logging-monitoring-service-1
       - name: logFile
         value: ${logDir}/app.log
 
