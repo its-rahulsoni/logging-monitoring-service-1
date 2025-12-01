@@ -21,3 +21,14 @@ management:
         http.server.requests: true
       percentiles:
         http.server.requests: 0.5, 0.9, 0.95, 0.99, 0.999
+
+resilience4j:
+  retry:
+    instances:
+      spring-retry:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exception-predicate: null
+        fail-after-max-retries: true
+        retryOnResultPredicate: com.logging.monitoring.learning.predicates.PendingRetryPredicate
+
